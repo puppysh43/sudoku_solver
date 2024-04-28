@@ -4,11 +4,13 @@ https://www.menneske.no/sudoku/eng/random.html
 */
 mod prelude {
     pub use crate::State;
+    pub use crate::{CellOption, CellType, SodukuBoard};
+    pub use bracket_terminal::prelude::*;
 }
 
 mod systems;
 
-use bracket_terminal::prelude::*;
+use crate::prelude::*;
 use std::fs;
 
 //soduku board is composed of 9 big squares (3x3) with each big square composed of
@@ -40,11 +42,6 @@ pub enum CellType {
     Seven,
     Eight,
     Nine,
-}
-
-pub struct Point {
-    x: i32,
-    y: i32,
 }
 
 #[derive(Clone, Debug)]
@@ -126,5 +123,5 @@ fn main() -> BError {
     let context = BTermBuilder::simple80x50()
         .with_title("Automatic Soduku Solver")
         .build()?;
-    main_loop(context, State::new(Difficulty::Impossible))
+    main_loop(context, State::new(Difficulty::Easy))
 }
