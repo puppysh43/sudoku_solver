@@ -94,6 +94,42 @@ pub fn run_systems(state: &mut State) {
                         }
                     }
                 }
+                let cell_x = cell_pos.x;
+                let cell_y = cell_pos.y;
+
+                //if the current cell is in subgrid 0,0
+                if cell_y >= 0 && cell_y <= 2 && cell_x >= 0 && cell_x <= 2 {
+                    for x in 0..=2 {
+                        for y in 0..=2 {
+                            let ref_idx = pos_to_idx(Point::new(x, y));
+                            match board_ref[ref_idx] {
+                                CellOption::Unsolved(_) => {
+                                    //if the cell is also unsolved you don't need to do anything
+                                }
+                                CellOption::Solved(ref_celltype) => {
+                                    //index tracking variable
+                                    let mut option_idx = 0;
+                                    let mut option_to_remove: Option<usize> = None;
+                                    //go through the buffer of all possible numbers
+
+                                    for option in options_buffer.iter() {
+                                        //if the number in the solved cell is the same as one still available in the list of options
+                                        //break out of the loop and store the index
+                                        if option == &ref_celltype {
+                                            option_to_remove = Some(option_idx);
+                                            break;
+                                        }
+                                        option_idx += 1;
+                                    }
+                                    //remove the existing number from the list of options using the index we've generated.
+                                    if option_to_remove.is_some() {
+                                        options_buffer.remove(option_to_remove.unwrap());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 //next check the 3x3 squares within the soduku board to see if there are any solved squares in there
                 //what are the bounds of those 9 squares expressed as point ranges
 
@@ -119,12 +155,20 @@ pub fn run_systems(state: &mut State) {
                 OR
                 4,4 -> 6,6
                 Big Square 2,1
-
+                6,3 -> 8,5
+                OR
+                7,4 -> 9,6
                 Big Square 0,2
-
+                0,6 -> 2,8
+                OR
+                1,7 -> 3,9
                 Big Square 1,2
-
+                3,6 -> 5,8
+                OR
+                4,7 -> 6,9
                 Big Square 2,2
+                6,6 -> 8,8
+                7,7 -> 9,9
                 */
 
                 //do all the steps necessary for a solving one
@@ -150,6 +194,10 @@ fn idx_to_pos(idx: usize) -> Point {
     }
     pos.x = idx as i32;
     pos
+}
+
+fn check_subgrid() {
+    //
 }
 /*
 ╔═════════════════╗
